@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No 13th Floor — Get Your AI Floor Score</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/fpd_styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo">NO 13TH FLOOR</div>
+    <div class="tagline">Your AI has a 13th floor. We find it.</div>
+  </header>
+  <div class="form-container">
+    <h1>Get Your Free Floor Score</h1>
+    <p class="subhead">Find out how much your AI stack is secretly costing you. Takes 60 seconds.</p>
+    <form method="POST" action="/score/">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" name="name" required placeholder="Jane Smith">
+      </div>
+      <div class="form-group">
+        <label for="contact_email">Work Email</label>
+        <input type="email" id="contact_email" name="contact_email" required placeholder="jane@company.com">
+      </div>
+      <div class="form-group">
+        <label for="monthly_spend_usd">Monthly AI Cloud Spend (USD)</label>
+        <input type="number" id="monthly_spend_usd" name="monthly_spend_usd" required min="0" step="100" placeholder="5000">
+      </div>
+      <div class="form-group">
+        <label for="model_size">Primary Model Size</label>
+        <select id="model_size" name="model_size" required>
+          <option value="">Select model size...</option>
+          <option value="lt1">Less than 1B parameters</option>
+          <option value="1to7">1B - 7B parameters</option>
+          <option value="7to70">7B - 70B parameters</option>
+          <option value="gt70">Greater than 70B parameters</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Task Types (select all that apply)</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="task_types" value="classification"> Classification</label>
+          <label><input type="checkbox" name="task_types" value="summarization"> Summarization</label>
+          <label><input type="checkbox" name="task_types" value="generation"> Text Generation</label>
+          <label><input type="checkbox" name="task_types" value="embedding"> Embeddings</label>
+          <label><input type="checkbox" name="task_types" value="code_completion"> Code Completion</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="training_runs_per_month">Training / Fine-tune Runs Per Month</label>
+        <input type="number" id="training_runs_per_month" name="training_runs_per_month" required min="0" placeholder="10">
+      </div>
+      <div class="form-group">
+        <label>Cloud Provider</label>
+        <div class="radio-group">
+          <label><input type="radio" name="cloud_provider" value="aws"> AWS</label>
+          <label><input type="radio" name="cloud_provider" value="gcp"> GCP</label>
+          <label><input type="radio" name="cloud_provider" value="azure"> Azure</label>
+          <label><input type="radio" name="cloud_provider" value="other"> Other</label>
+        </div>
+      </div>
+      <input type="submit" class="btn-primary" value="Get My Floor Score &rarr;">
+    </form>
+    <p class="policy-note">
+      We store only cost and utilization estimates &mdash; never your data or content.
+      <a href="/policy">Data policy</a>
+    </p>
+  </div>
+  <footer>
+    A product of <a href="https://firstprincipledynamics.com">First Principle Dynamics LLC</a> &middot; Miami, FL
+  </footer>
+</body>
+</html>
