@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Floor Score — No 13th Floor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/fpd_styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo">NO 13TH FLOOR</div>
+  </header>
+  <div class="result-container">
+    <h1>{{ name }}'s Floor Score</h1>
+    <div class="grade-card" style="border-color: {{ score.grade_color }}">
+      <div class="grade-letter" style="color: {{ score.grade_color }}">{{ score.grade }}</div>
+      <div class="grade-label">Floor Score</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card waste">
+        <div class="metric-value">${{ "{:,.0f}".format(score.estimated_monthly_waste_usd) }}</div>
+        <div class="metric-label">Estimated Monthly Waste</div>
+      </div>
+      <div class="metric-card annual">
+        <div class="metric-value">${{ "{:,.0f}".format(score.estimated_annual_waste_usd) }}</div>
+        <div class="metric-label">Projected Annual Waste</div>
+      </div>
+      <div class="metric-card carbon">
+        <div class="metric-value">{{ "{:,.0f}".format(score.estimated_monthly_co2_kg) }} kg</div>
+        <div class="metric-label">Monthly CO&#8322; Estimate</div>
+      </div>
+      <div class="metric-card oversize">
+        <div class="metric-value">{{ score.oversize_ratio }}&times;</div>
+        <div class="metric-label">Estimated Oversize Ratio</div>
+      </div>
+    </div>
+    <div class="insight-block">
+      <h2>What This Means</h2>
+      <p>Your current model architecture (~{{ score.actual_model_size_b }}B parameters) is estimated to be
+      <strong>{{ score.oversize_ratio }}&times; larger</strong> than optimal for your declared tasks.
+      A right-sized model of approximately <strong>{{ score.optimal_model_size_b }}B parameters</strong>
+      would likely deliver equivalent performance at a fraction of the cost.</p>
+    </div>
+    <div class="cta-block">
+      <h2>Ready to Find Your 13th Floor?</h2>
+      <p>Your full Waste Report &mdash; including a prioritized savings roadmap and exact architectural
+      recommendations &mdash; is free for pilot clients.</p>
+      <a href="mailto:audit@no13thfloor.org?subject=Full Waste Report Request" class="btn-primary">
+        Request Your Full Report &rarr;
+      </a>
+    </div>
+    <p class="methodology-note">{{ score.methodology_note }}</p>
+  </div>
+  <footer>
+    A product of <a href="https://firstprincipledynamics.com">First Principle Dynamics LLC</a> &middot; Miami, FL
+  </footer>
+</body>
+</html>
