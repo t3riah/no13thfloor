@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: 'Inter', Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: #1A1A2E; border-radius: 12px; overflow: hidden; }
+    .header { background: #1A1A2E; padding: 30px; text-align: center; border-bottom: 2px solid #00F5D4; }
+    .logo { color: #00F5D4; font-size: 1.4rem; font-weight: 700; letter-spacing: 0.1em; }
+    .body { padding: 30px; color: #F8F9FA; line-height: 1.6; }
+    .highlight { color: #00F5D4; font-weight: 600; }
+    .footer { padding: 20px 30px; color: #6C757D; font-size: 0.75rem; text-align: center; }
+    .footer a { color: #00F5D4; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">NO 13TH FLOOR</div>
+    </div>
+    <div class="body">
+      <p>Hi {{ name }},</p>
+      <p>Your <span class="highlight">No 13th Floor Waste Report</span> is attached to this email.</p>
+      <p>It includes:</p>
+      <ul style="margin: 16px 0; padding-left: 20px; color: rgba(248,249,250,0.85);">
+        <li>Full analysis of your AI infrastructure inefficiencies</li>
+        <li>Quantified cost and carbon waste breakdown</li>
+        <li>Prioritized savings roadmap</li>
+        <li>Right-sizing recommendations by task type</li>
+      </ul>
+      <p>To discuss implementation or schedule a follow-up, reply to this email or contact us at
+      <a href="mailto:audit@no13thfloor.org" style="color:#00F5D4;">audit@no13thfloor.org</a>.</p>
+      <p style="color: #6C757D; font-size: 0.82rem; margin-top: 24px;">
+        This report contains estimates based on publicly available efficiency benchmarks.
+        Results are directional, not audited financials.
+      </p>
+    </div>
+    <div class="footer">
+      <a href="https://no13thfloor.org">no13thfloor.org</a> &middot;
+      A product of <a href="https://firstprincipledynamics.com">First Principle Dynamics LLC</a>
+    </div>
+  </div>
+</body>
+</html>
