@@ -1,10 +1,17 @@
 # No 13th Floor
 
+[![Live](https://img.shields.io/badge/Status-Live-brightgreen)](https://no13thfloor.org?utm_source=github&utm_medium=readme&utm_campaign=badge)
+[![Free](https://img.shields.io/badge/Free-No%20Signup-blue)](https://no13thfloor.org?utm_source=github&utm_medium=readme&utm_campaign=badge)
+[![Open Source](https://img.shields.io/badge/Open%20Source-MIT-yellow)](LICENSE)
+[![Built with Groq](https://img.shields.io/badge/Inference-Groq%20API-orange)](https://groq.com)
+
 **AI model waste auditor. Free. No signup required.**
 
 > Are you running a 70B model for a job a 7B model handles fine? You're not alone. This tool finds out.
 
-**[Try the free audit → no13thfloor.org](https://no13thfloor.org)**
+**[Try the free audit → no13thfloor.org](https://no13thfloor.org?utm_source=github&utm_medium=readme&utm_campaign=cta)**
+
+⭐ **Star this repo if No 13th Floor saved your team money** — it helps other engineers find it.
 
 ---
 
@@ -64,10 +71,10 @@ Requires a free [Groq API key](https://groq.com/?utm_source=no13thfloor&utm_medi
 
 This is not a hypothetical. These conversations happen every day:
 
-- *"We were initially using GPT-4 for everything (yeah, I know)"* — r/OpenAI
-- *"AI support costs way higher than expected... wrong model for the task"* — r/SaaS
-- *"It felt like overkill to use a 175B+ model just for simple logic"* — r/AI_Agents
-- *"Why using GPT-4 for sentiment analysis ffs?"* — r/OpenAI
+- "We were initially using GPT-4 for everything (yeah, I know)" — r/OpenAI
+- "AI support costs way higher than expected... wrong model for the task" — r/SaaS
+- "It felt like overkill to use a 175B+ model just for simple logic" — r/AI_Agents
+- "Why using GPT-4 for sentiment analysis ffs?" — r/OpenAI
 
 The pattern is universal: teams reach for the biggest model first, realize the cost later, and then manually trial-and-error their way to something cheaper. No 13th Floor shortcircuits that process.
 
@@ -88,7 +95,7 @@ Based on your score, the tool recommends right-sized inference platforms:
 
 ## Built by
 
-[First Principle Dynamics LLC](https://firstprincipledynamics.com) — Miami, FL
+[First Principle Dynamics LLC](https://firstprincipledynamics.com/) — Miami, FL
 
 Minority-owned. Building tools grounded in first principles thinking.
 
