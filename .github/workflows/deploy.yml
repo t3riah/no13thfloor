@@ -1,0 +1,24 @@
+name: Deploy to Oracle Cloud
+
+on:
+  push:
+   deploy branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USER }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          script: |
+            cd ~/no13thfloor
+            git pull origin main
+            docker compose build --no-cache
+            docker compose down
+            docker compose up -d
+            echo "Deployment complete"
