@@ -9,6 +9,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Copy code to Oracle
+        uses: appleboy/scp-action@v1.0.3
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USER }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          source: "."
+          target: "~/no13thfloor"
+
       - name: SSH and Deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -16,9 +28,40 @@ jobs:
           username: ${{ secrets.ORACLE_USER }}
           key: ${{ secrets.ORACLE_SSH_KEY }}
           script: |
+            set -e
+            if ! command -v docker >/dev/null 2>&1; then
+              sudo apt-get update -qq
+              sudo apt-get install -y -qq docker.io docker-compose-plugin git openssl
+              sudo systemctl enable --now docker
+            fi
             cd ~/no13thfloor
-            git pull origin main
-            docker compose build --no-cache
-            docker compose down
-            docker compose up -d
+            mkdir -p data reports certs certbot-webroot
+            if [ ! -f .env ]; then
+              cp .env.example .env
+              sed -i "s/replace_with_long_random_string/$(openssl rand -hex 32)/" .env
+            fi
+            if [ ! -f certs/live/no13thfloor.org/fullchain.pem ]; then
+              mkdir -p certs/live/no13thfloor.org
+              openssl req -x509 -nodes -days 7 -newkey rsa:2048 \
+                -keyout certs/live/no13thfloor.org/privkey.pem \
+                -out certs/live/no13thfloor.org/fullchain.pem \
+                -subj "/CN=audit.no13thfloor.org" 2>/dev/null
+            fi
+            sudo docker compose build
+            sudo docker compose down
+            sudo docker compose up -d
+            sleep 10
+            sudo docker compose exec -T app python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health'); print('app healthy')"
+            if getent hosts audit.no13thfloor.org | grep -q .; then
+              sudo docker run --rm \
+                -v "$HOME/no13thfloor/certs:/etc/letsencrypt" \
+                -v "$HOME/no13thfloor/certbot-webroot:/var/www/certbot" \
+                certbot/certbot certonly --webroot -w /var/www/certbot \
+                --cert-name no13thfloor.org -d audit.no13thfloor.org \
+                --agree-tos -m louievb3@gmail.com --non-interactive --keep-until-expiry || true
+              sudo docker compose restart nginx || true
+              echo "TLS step done"
+            else
+              echo "DNS not resolving yet; keeping bootstrap cert"
+            fi
             echo "Deployment complete"
