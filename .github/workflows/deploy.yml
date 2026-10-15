@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Copy code to Oracle
-        uses: appleboy/scp-action@v1.0.3
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.ORACLE_HOST }}
           username: ${{ secrets.ORACLE_USER }}
