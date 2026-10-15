@@ -56,8 +56,19 @@ jobs:
             sudo docker compose build
             sudo docker compose down
             sudo docker compose up -d
-            sleep 10
-            sudo docker compose exec -T app python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health'); print('app healthy')"
+            echo "Waiting for app to become healthy..."
+            for i in $(seq 1 30); do
+              if sudo docker compose exec -T app python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" 2>/dev/null; then
+                echo "app healthy"
+                break
+              fi
+              if [ "$i" = "30" ]; then
+                echo "app failed to become healthy in time"
+                sudo docker compose logs app | tail -30
+                exit 1
+              fi
+              sleep 10
+            done
             DNS_IP=$(getent hosts audit.no13thfloor.org | awk '{print $1}')
             if [ -n "$DNS_IP" ]; then
               echo "DNS resolves audit.no13thfloor.org to $DNS_IP"
@@ -71,7 +82,7 @@ jobs:
               if [ "$HAVE_REAL_CERT" = "1" ]; then
                 echo "Real certificate valid for 30+ days; skipping certbot"
               else
-                echo "Issuing Let’s Encrypt certificate..."
+                echo "Issuing Let's Encrypt certificate..."
                 rm -rf "$CERTDIR.bootstrap.bak"
                 if [ -d "$CERTDIR" ]; then
                   mv "$CERTDIR" "$CERTDIR.bootstrap.bak"
