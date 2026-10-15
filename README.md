@@ -1,15 +1,14 @@
 # No 13th Floor
 
-[![Live](https://img.shields.io/badge/Status-Live-brightgreen)](https://no13thfloor.org?utm_source=github&utm_medium=readme&utm_campaign=badge)
-[![Free](https://img.shields.io/badge/Free-No%20Signup-blue)](https://no13thfloor.org?utm_source=github&utm_medium=readme&utm_campaign=badge)
+[![Free](https://img.shields.io/badge/Free-No%20Signup-blue)](https://no13thfloor.org)
 [![Open Source](https://img.shields.io/badge/Open%20Source-MIT-yellow)](LICENSE)
-[![Built with Groq](https://img.shields.io/badge/Inference-Groq%20API-orange)](https://groq.com)
+[![Scoring](https://img.shields.io/badge/Scoring-Deterministic%20Rules-green)](services/score_calculator.py)
 
 **AI model waste auditor. Free. No signup required.**
 
 > Are you running a 70B model for a job a 7B model handles fine? You're not alone. This tool finds out.
 
-**[Try the free audit → no13thfloor.org](https://no13thfloor.org?utm_source=github&utm_medium=readme&utm_campaign=cta)**
+**[Try the free audit → no13thfloor.org](https://no13thfloor.org)**
 
 ⭐ **Star this repo if No 13th Floor saved your team money** — it helps other engineers find it.
 
@@ -28,7 +27,19 @@ You describe your use case and current model. It returns:
 - A recommended right-sized architecture
 - A curated list of cost-reduction platforms matched to your workload
 
-No account. No credit card. No waiting.
+No account. No credit card. No waiting. Your score renders instantly and anonymously — an email address is only asked for if you want the PDF report delivered to your inbox.
+
+---
+
+## How the scoring works
+
+No LLM. No black box. The Floor Score is computed by a **deterministic, rule-based engine** (`services/score_calculator.py`) from your declared spend, model size, task types, training frequency, and cloud provider.
+
+That is a deliberate choice:
+
+- **Explainable** — every number on your report traces back to a visible rule, not a model's mood.
+- **Instant** — no inference latency, no queue.
+- **Zero marginal cost** — scoring a thousand audits costs the same as scoring one, which is why the tool can stay free forever.
 
 ---
 
@@ -44,9 +55,11 @@ No 13th Floor makes the waste visible. And names a number.
 
 ## Stack
 
-- **Backend**: Python / Flask
-- **Frontend**: HTML/CSS (no framework)
-- **Inference**: Groq API (Llama 3 70B)
+- **Backend**: Python / FastAPI
+- **Database**: SQLite via SQLModel
+- **Frontend**: Jinja2 templates + static CSS (no framework)
+- **Scoring**: deterministic rule-based engine (no LLM inference)
+- **Reports**: WeasyPrint PDFs, delivered via Resend
 - **Hosting**: Oracle Cloud (free tier)
 - **Auth**: None — intentionally
 
@@ -58,12 +71,12 @@ No 13th Floor makes the waste visible. And names a number.
 git clone https://github.com/t3riah/no13thfloor.git
 cd no13thfloor
 cp .env.example .env
-# Add your GROQ_API_KEY to .env
+# Fill in SECRET_KEY; add RESEND_API_KEY only if you want email PDF reports
 pip install -r requirements.txt
-python app.py
+uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-Requires a free [Groq API key](https://groq.com/?utm_source=no13thfloor&utm_medium=readme&utm_campaign=github).
+Open `http://localhost:8000/score/` and run your first audit. Email delivery is optional — the tool scores fully anonymously without it.
 
 ---
 
@@ -86,10 +99,10 @@ Based on your score, the tool recommends right-sized inference platforms:
 
 | Platform | Best for | Savings potential |
 |---|---|---|
-| [Groq](https://groq.com/?utm_source=no13thfloor&utm_medium=readme&utm_campaign=github) | Speed-critical tasks, real-time | Up to 90% vs GPT-4 |
-| [Together AI](https://www.together.ai/?utm_source=no13thfloor&utm_medium=readme&utm_campaign=github) | Open-source model hosting | Up to 95% vs GPT-4 |
-| [Replicate](https://replicate.com/?utm_source=no13thfloor&utm_medium=readme&utm_campaign=github) | Bursty / pay-per-prediction | Eliminates idle cost |
-| [Vantage](https://www.vantage.sh/?utm_source=no13thfloor&utm_medium=readme&utm_campaign=github) | AI API cost tracking | Free up to $2,500/mo |
+| Groq | Speed-critical tasks, real-time | Up to 90% vs GPT-4 |
+| Together AI | Open-source model hosting | Up to 95% vs GPT-4 |
+| Replicate | Bursty / pay-per-prediction | Eliminates idle cost |
+| Vantage | AI API cost tracking | Free up to $2,500/mo |
 
 ---
 
