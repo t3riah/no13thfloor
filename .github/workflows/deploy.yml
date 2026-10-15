@@ -58,14 +58,42 @@ jobs:
             sudo docker compose up -d
             sleep 10
             sudo docker compose exec -T app python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health'); print('app healthy')"
-            if getent hosts audit.no13thfloor.org | grep -q .; then
-              sudo docker run --rm \
-                -v "$HOME/no13thfloor/certs:/etc/letsencrypt" \
-                -v "$HOME/no13thfloor/certbot-webroot:/var/www/certbot" \
-                certbot/certbot certonly --webroot -w /var/www/certbot \
-                --cert-name no13thfloor.org -d audit.no13thfloor.org \
-                --agree-tos -m louievb3@gmail.com --non-interactive --keep-until-expiry || true
-              sudo docker compose restart nginx || true
+            DNS_IP=$(getent hosts audit.no13thfloor.org | awk '{print $1}')
+            if [ -n "$DNS_IP" ]; then
+              echo "DNS resolves audit.no13thfloor.org to $DNS_IP"
+              CERTDIR="$HOME/no13thfloor/certs/live/no13thfloor.org"
+              HAVE_REAL_CERT=0
+              if [ -f "$CERTDIR/fullchain.pem" ] \
+                && ! openssl x509 -in "$CERTDIR/fullchain.pem" -noout -issuer 2>/dev/null | grep -q "CN *= *audit.no13thfloor.org" \
+                && openssl x509 -in "$CERTDIR/fullchain.pem" -noout -checkend 2592000 2>/dev/null; then
+                HAVE_REAL_CERT=1
+              fi
+              if [ "$HAVE_REAL_CERT" = "1" ]; then
+                echo "Real certificate valid for 30+ days; skipping certbot"
+              else
+                echo "Issuing Let’s Encrypt certificate..."
+                rm -rf "$CERTDIR.bootstrap.bak"
+                if [ -d "$CERTDIR" ]; then
+                  mv "$CERTDIR" "$CERTDIR.bootstrap.bak"
+                fi
+                mkdir -p "$CERTDIR"
+                if sudo docker run --rm \
+                    -v "$HOME/no13thfloor/certs:/etc/letsencrypt" \
+                    -v "$HOME/no13thfloor/certbot-webroot:/var/www/certbot" \
+                    certbot/certbot certonly --webroot -w /var/www/certbot \
+                    --cert-name no13thfloor.org -d audit.no13thfloor.org \
+                    --agree-tos -m louievb3@gmail.com --non-interactive; then
+                  echo "certbot succeeded"
+                  rm -rf "$CERTDIR.bootstrap.bak"
+                else
+                  echo "certbot FAILED; restoring previous cert"
+                  rm -rf "$CERTDIR"
+                  if [ -d "$CERTDIR.bootstrap.bak" ]; then
+                    mv "$CERTDIR.bootstrap.bak" "$CERTDIR"
+                  fi
+                fi
+                sudo docker compose restart nginx || true
+              fi
               echo "TLS step done"
             else
               echo "DNS not resolving yet; keeping bootstrap cert"
