@@ -18,12 +18,12 @@
     <p class="subhead">Find out how much your AI stack is secretly costing you. Takes 60 seconds.</p>
     <form method="POST" action="/score/">
       <div class="form-group">
-        <label for="name">Your Name</label>
-        <input type="text" id="name" name="name" required placeholder="Jane Smith">
+        <label for="name">Your Name <span class="optional">(optional)</span></label>
+        <input type="text" id="name" name="name" placeholder="Jane Smith">
       </div>
       <div class="form-group">
-        <label for="contact_email">Work Email</label>
-        <input type="email" id="contact_email" name="contact_email" required placeholder="jane@company.com">
+        <label for="contact_email">Work Email <span class="optional">(optional — for your PDF report)</span></label>
+        <input type="email" id="contact_email" name="contact_email" placeholder="jane@company.com">
       </div>
       <div class="form-group">
         <label for="monthly_spend_usd">Monthly AI Cloud Spend (USD)</label>
