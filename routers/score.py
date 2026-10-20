@@ -17,6 +17,16 @@ async def score_form(request: Request):
     return templates.TemplateResponse("score_form.html", {"request": request})
 
 
+@router.get("/methodology", response_class=HTMLResponse)
+async def methodology(request: Request):
+    return templates.TemplateResponse("methodology.html", {"request": request})
+
+
+@router.get("/policy", response_class=HTMLResponse)
+async def policy(request: Request):
+    return templates.TemplateResponse("policy.html", {"request": request})
+
+
 @router.post("/", response_class=HTMLResponse)
 async def score_submit(
     request: Request,
