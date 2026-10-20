@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Methodology — No 13th Floor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/fpd_styles.css">
+  <style>
+    .doc h2 { font-family:'Space Grotesk',sans-serif; font-size:1.25rem; color:var(--teal); margin:2.25rem 0 0.75rem; }
+    .doc h3 { font-family:'Space Grotesk',sans-serif; font-size:1.05rem; margin:1.5rem 0 0.5rem; }
+    .doc p, .doc li { font-size:0.95rem; line-height:1.7; color:rgba(248,249,250,0.88); margin-bottom:0.75rem; }
+    .doc ul { padding-left:1.4rem; }
+    .doc table { width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.9rem; }
+    .doc th, .doc td { text-align:left; padding:0.55rem 0.75rem; border-bottom:1px solid rgba(255,255,255,0.1); }
+    .doc th { color:var(--teal); font-weight:600; }
+    .doc .worked { background:rgba(255,255,255,0.04); border-left:3px solid var(--teal); border-radius:0 10px 10px 0; padding:1.25rem 1.5rem; margin:1.25rem 0; }
+    .doc .worked p { margin-bottom:0.5rem; }
+    .doc .fine { font-size:0.78rem; color:var(--slate); margin-top:2rem; }
+    .doc code { background:rgba(255,255,255,0.08); padding:0.1rem 0.35rem; border-radius:4px; font-size:0.85em; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo">NO 13TH FLOOR</div>
+    <div class="tagline">Your AI has a 13th floor. We find it.</div>
+  </header>
+  <div class="form-container doc">
+    <h1>How we score</h1>
+    <p class="subhead">The full method behind your Floor Score. No black boxes — check our math.</p>
+
+    <h2>1. What you tell us</h2>
+    <p>The score is built entirely from five inputs you provide — we never see your models, data, or cloud accounts:</p>
+    <ul>
+      <li><strong>Monthly AI cloud spend</strong> (USD)</li>
+      <li><strong>Primary model size bucket</strong> — under 1B, 1–7B, 7–70B, or over 70B parameters</li>
+      <li><strong>Task types</strong> — classification, summarization, text generation, embeddings, code completion</li>
+      <li><strong>Training / fine-tune runs per month</strong></li>
+      <li><strong>Cloud provider</strong></li>
+    </ul>
+
+    <h2>2. Model size → a representative number</h2>
+    <p>Each size bucket maps to a representative parameter count used in the calculation:</p>
+    <table>
+      <tr><th>Bucket you pick</th><th>Representative size</th></tr>
+      <tr><td>Under 1B</td><td>0.5B</td></tr>
+      <tr><td>1B – 7B</td><td>4B</td></tr>
+      <tr><td>7B – 70B</td><td>35B</td></tr>
+      <tr><td>Over 70B</td><td>100B</td></tr>
+    </table>
+
+    <h2>3. Right-sized for your tasks</h2>
+    <p>Each task type has a published, task-optimal model size — the smallest model class that consistently matches large-model quality on that task. We average the optimal sizes of the tasks you selected:</p>
+    <table>
+      <tr><th>Task</th><th>Task-optimal size</th></tr>
+      <tr><td>Classification</td><td>1B</td></tr>
+      <tr><td>Summarization</td><td>7B</td></tr>
+      <tr><td>Text generation</td><td>13B</td></tr>
+      <tr><td>Embeddings</td><td>0.1B</td></tr>
+      <tr><td>Code completion</td><td>7B</td></tr>
+    </table>
+
+    <h2>4. The oversize ratio and your grade</h2>
+    <p><code>oversize ratio = representative model size ÷ average task-optimal size</code></p>
+    <p>The ratio is the core of the score. It answers one question: how much bigger is your model than the work actually needs? The letter grade follows directly:</p>
+    <table>
+      <tr><th>Grade</th><th>Oversize ratio</th></tr>
+      <tr><td>A</td><td>1.5× or less</td></tr>
+      <tr><td>B</td><td>up to 3×</td></tr>
+      <tr><td>C</td><td>up to 6×</td></tr>
+      <tr><td>D</td><td>up to 12×</td></tr>
+      <tr><td>E</td><td>up to 20×</td></tr>
+      <tr><td>F</td><td>above 20×</td></tr>
+    </table>
+
+    <h2>5. "Spend at risk" — what the dollar figure means</h2>
+    <p>We compute a minimal baseline — what your tasks would cost on right-sized models — and subtract it from your stated spend:</p>
+    <p><code>spend at risk = monthly spend − (avg optimal size × $0.0004 × training runs)</code></p>
+    <p><strong>Read this number as exposure, not as a savings prediction.</strong> It is the share of your spend running on oversized capacity — an upper bound on what right-sizing could touch. We do not claim you will save this amount. Actual savings depend on your quality requirements, latency constraints, and how much of the work can genuinely move to smaller models. That is why we call it <em>spend at risk</em>, not <em>waste</em>.</p>
+
+    <h3>Worked example</h3>
+    <div class="worked">
+      <p><strong>Inputs:</strong> $10,000/month spend · 7–70B bucket (→ 35B) · summarization + generation · 10 training runs · AWS</p>
+      <p><strong>Task-optimal average:</strong> (7B + 13B) ÷ 2 = <strong>10B</strong></p>
+      <p><strong>Oversize ratio:</strong> 35 ÷ 10 = <strong>3.5× → Grade C</strong></p>
+      <p><strong>Baseline:</strong> 10 × $0.0004 × 10 = <strong>$0.04</strong></p>
+      <p><strong>Monthly spend at risk:</strong> $10,000 − $0.04 ≈ <strong>$10,000</strong> — nearly all of the spend is exposed to the oversizing, which is what a 3.5× ratio means. The insight is the ratio; the dollar figure shows how much spend sits under it.</p>
+    </div>
+
+    <h2>6. Carbon estimate</h2>
+    <p>GPU hours are estimated as <code>model size × training runs × 0.1</code>, converted at 0.4 kWh per GPU hour, and multiplied by the US average grid intensity of 0.429 kg CO₂/kWh (CodeCarbon open methodology). This is a directional estimate, not formal carbon accounting.</p>
+
+    <h2>7. Honest limits</h2>
+    <ul>
+      <li><strong>Self-reported inputs.</strong> The score reflects what you tell us. It is an architectural judgment, not a measurement of your bill.</li>
+      <li><strong>Task type only.</strong> "Right-sized" is judged against task type. It does not account for quality requirements, latency constraints, context length, or safety margins that may legitimately demand a larger model.</li>
+      <li><strong>No inference inputs yet.</strong> Most AI spend is inference; the current form weights training runs. Inference-volume inputs are on the roadmap and will sharpen the score significantly.</li>
+      <li><strong>Estimates, not professional advice.</strong> Use the score to start the conversation inside your team, not as the basis for production decisions.</li>
+    </ul>
+
+    <h2>8. Free, anonymous, no sales call</h2>
+    <p>Scoring is free and anonymous. You only share an email if you want a report sent to you — see our <a href="/policy" style="color:var(--teal)">data policy</a>. No signup is required, and no sales call is needed to get your score.</p>
+
+    <p class="fine">Methodology v1.0 · October 2026. The scoring engine is deterministic and open — it ships in our public repository once published, so anyone can audit or reproduce it.</p>
+  </div>
+  <footer>
+    No13thfloor — run by Louie Blanche · Miami, FL<br>
+    <a href="/score/">Get your Floor Score</a> · <a href="/policy">Data policy</a>
+  </footer>
+</body>
+</html>
