@@ -20,11 +20,11 @@
     <div class="metrics-grid">
       <div class="metric-card waste">
         <div class="metric-value">${{ "{:,.0f}".format(score.estimated_monthly_waste_usd) }}</div>
-        <div class="metric-label">Estimated Monthly Waste</div>
+        <div class="metric-label">Estimated Monthly Spend at Risk</div>
       </div>
       <div class="metric-card annual">
         <div class="metric-value">${{ "{:,.0f}".format(score.estimated_annual_waste_usd) }}</div>
-        <div class="metric-label">Projected Annual Waste</div>
+        <div class="metric-label">Projected Annual Spend at Risk</div>
       </div>
       <div class="metric-card carbon">
         <div class="metric-value">{{ "{:,.0f}".format(score.estimated_monthly_co2_kg) }} kg</div>
@@ -35,6 +35,7 @@
         <div class="metric-label">Estimated Oversize Ratio</div>
       </div>
     </div>
+    <p class="methodology-note" style="text-align:center">Estimates, not professional advice. <a href="/methodology">See how we score</a>.</p>
     <div class="insight-block">
       <h2>What This Means</h2>
       <p>Your current model architecture (~{{ score.actual_model_size_b }}B parameters) is estimated to be
@@ -49,12 +50,12 @@
       <a href="mailto:audit@no13thfloor.org?subject=Full Waste Report Request" class="btn-primary">
         Request Your Full Report &rarr;
       </a>
+      <p class="methodology-note">{{ score.methodology_note }}</p>
     </div>
-    <p class="methodology-note">{{ score.methodology_note }}</p>
-  </div>
-  <footer>
-    A product of <a href="https://firstprincipledynamics.com">First Principle Dynamics LLC</a> &middot; Miami, FL
+    <footer>
+      No13thfloor — run by Louie Blanche &middot; Miami, FL
           <br><a href="https://ko-fi.com/no13thfloor" target="_blank" rel="noopener" style="display:inline-block;margin-top:0.5rem;padding:0.4rem 1rem;background:#FF5E5B;color:#fff;border-radius:6px;font-size:0.85rem;text-decoration:none;">&#9749; Support this tool on Ko-fi</a>
-  </footer>
+    </footer>
+  </div>
 </body>
 </html>
