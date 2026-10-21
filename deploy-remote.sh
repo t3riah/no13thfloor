@@ -16,7 +16,7 @@ if [ ! -f .env ]; then
   cp .env.example .env
   sed -i "s/replace_with_long_random_string/$(openssl rand -hex 32)/" .env
 fi
-if [ ! -f certs/live/no13thfloor.org/fullchain.pem ]; then
+if ! sudo test -f "$HOME/no13thfloor/certs/live/no13thfloor.org/fullchain.pem"; then
   mkdir -p certs/live/no13thfloor.org
   openssl req -x509 -nodes -days 7 -newkey rsa:2048 \
     -keyout certs/live/no13thfloor.org/privkey.pem \
@@ -45,8 +45,8 @@ if [ -n "$DNS_IP" ]; then
   CERTDIR="$HOME/no13thfloor/certs/live/no13thfloor.org"
   HAVE_REAL_CERT=0
   if [ -f "$CERTDIR/fullchain.pem" ] \
-    && ! openssl x509 -in "$CERTDIR/fullchain.pem" -noout -issuer 2>/dev/null | grep -q "CN *= *audit.no13thfloor.org" \
-    && openssl x509 -in "$CERTDIR/fullchain.pem" -noout -checkend 2592000 2>/dev/null; then
+    && ! sudo openssl x509 -in "$CERTDIR/fullchain.pem" -noout -issuer 2>/dev/null | grep -q "CN *= *audit.no13thfloor.org" \
+    && sudo openssl x509 -in "$CERTDIR/fullchain.pem" -noout -checkend 2592000 2>/dev/null; then
     HAVE_REAL_CERT=1
   fi
   if [ "$HAVE_REAL_CERT" = "1" ]; then
