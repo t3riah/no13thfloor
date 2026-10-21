@@ -4,18 +4,8 @@ on:
 jobs:
   debug:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-      - name: Copy code to Oracle
-        uses: appleboy/scp-action@v1.0.0
-        with:
-          host: ${{ secrets.ORACLE_HOST }}
-          username: ${{ secrets.ORACLE_USER }}
-          key: ${{ secrets.ORACLE_SSH_KEY }}
-          source: "."
-          target: "~/no13thfloor"
       - name: Prepare SSH key
         env:
           SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
@@ -23,9 +13,5 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/oracle_key
           chmod 600 ~/.ssh/oracle_key
-          ssh-keygen -lf ~/.ssh/oracle_key
-      - name: Environment probe
-        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'echo PROBE_START; pwd; ls ~/no13thfloor | head -5; df -h / | tail -1; command -v docker; sudo -n true && echo SUDO_OK; head -c 160 ~/no13thfloor/deploy-remote.sh | od -c | head -6; echo PROBE_END'
-      - name: Traced deploy run
-        if: always()
-        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash -x ~/no13thfloor/deploy-remote.sh' 2>&1 | tail -60
+      - name: Cert state probe
+        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'echo === plain ls ===; ls -la ~/no13thfloor/certs/ 2>&1; ls -la ~/no13thfloor/certs/live/ 2>&1; ls -la ~/no13thfloor/certs/live/no13thfloor.org/ 2>&1; echo === namei ===; namei -l ~/no13thfloor/certs/live/no13thfloor.org/fullchain.pem 2>&1; echo === sudo ls ===; sudo ls -la ~/no13thfloor/certs/live/no13thfloor.org/ 2>&1; echo === cert info via sudo ===; sudo openssl x509 -in ~/no13thfloor/certs/live/no13thfloor.org/fullchain.pem -noout -issuer -enddate 2>&1; echo === containers ===; sudo docker ps --format "{{.Names}} {{.Status}}" 2>&1'
