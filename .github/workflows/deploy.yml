@@ -31,4 +31,4 @@ jobs:
           ssh-keygen -lf ~/.ssh/oracle_key
 
       - name: SSH and Deploy
-        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash -s' < deploy-remote.sh
+        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash ~/no13thfloor/deploy-remote.sh'
