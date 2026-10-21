@@ -24,7 +24,8 @@ jobs:
           printf '%s\n' "$SSH_KEY" > ~/.ssh/oracle_key
           chmod 600 ~/.ssh/oracle_key
           ssh-keygen -lf ~/.ssh/oracle_key
-      - name: Verbose SSH probe
-        run: ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'echo SSH_OK; hostname'
-      - name: Real deploy attempt
-        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash -s' < deploy-remote.sh
+      - name: Verbose streamed-script attempt (expected to fail)
+        run: ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash -s' < deploy-remote.sh 2>&1 | tail -30
+      - name: Run on-server deploy script directly
+        if: always()
+        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash ~/no13thfloor/deploy-remote.sh'
