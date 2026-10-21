@@ -1,0 +1,20 @@
+name: SSH Debug
+on:
+  workflow_dispatch:
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write key from secret
+        env:
+          SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s' "$SSH_KEY" > ~/.ssh/id_key
+          chmod 600 ~/.ssh/id_key
+          wc -c ~/.ssh/id_key
+          ssh-keygen -y -f ~/.ssh/id_key > ~/.ssh/id_key.pub 2>/tmp/keyerr || cat /tmp/keyerr
+          ssh-keygen -lf ~/.ssh/id_key.pub 2>/dev/null || true
+      - name: Verbose SSH test
+        run: |
+          ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/id_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'echo SSH_OK; hostname' 2>&1 | tail -80
