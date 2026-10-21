@@ -44,7 +44,7 @@ if [ -n "$DNS_IP" ]; then
   echo "DNS resolves audit.no13thfloor.org to $DNS_IP"
   CERTDIR="$HOME/no13thfloor/certs/live/no13thfloor.org"
   HAVE_REAL_CERT=0
-  if [ -f "$CERTDIR/fullchain.pem" ] \
+  if sudo test -f "$CERTDIR/fullchain.pem" \
     && ! sudo openssl x509 -in "$CERTDIR/fullchain.pem" -noout -issuer 2>/dev/null | grep -q "CN *= *audit.no13thfloor.org" \
     && sudo openssl x509 -in "$CERTDIR/fullchain.pem" -noout -checkend 2592000 2>/dev/null; then
     HAVE_REAL_CERT=1
@@ -53,27 +53,18 @@ if [ -n "$DNS_IP" ]; then
     echo "Real certificate valid for 30+ days; skipping certbot"
   else
     echo "Issuing Let's Encrypt certificate..."
-    rm -rf "$CERTDIR.bootstrap.bak"
-    if [ -d "$CERTDIR" ]; then
-      mv "$CERTDIR" "$CERTDIR.bootstrap.bak"
-    fi
-    mkdir -p "$CERTDIR"
     if sudo docker run --rm \
         -v "$HOME/no13thfloor/certs:/etc/letsencrypt" \
         -v "$HOME/no13thfloor/certbot-webroot:/var/www/certbot" \
         certbot/certbot certonly --webroot -w /var/www/certbot \
         --cert-name no13thfloor.org -d audit.no13thfloor.org \
-        --agree-tos -m louievb3@gmail.com --non-interactive; then
+        --agree-tos -m louievb3@gmail.com --non-interactive \
+      && sudo test -f "$CERTDIR/fullchain.pem"; then
       echo "certbot succeeded"
-      rm -rf "$CERTDIR.bootstrap.bak"
+      sudo docker compose restart nginx || true
     else
-      echo "certbot FAILED; restoring previous cert"
-      rm -rf "$CERTDIR"
-      if [ -d "$CERTDIR.bootstrap.bak" ]; then
-        mv "$CERTDIR.bootstrap.bak" "$CERTDIR"
-      fi
+      echo "certbot FAILED or cert missing; nginx left on existing configuration"
     fi
-    sudo docker compose restart nginx || true
   fi
   echo "TLS step done"
 else
