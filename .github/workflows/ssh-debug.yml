@@ -24,8 +24,8 @@ jobs:
           printf '%s\n' "$SSH_KEY" > ~/.ssh/oracle_key
           chmod 600 ~/.ssh/oracle_key
           ssh-keygen -lf ~/.ssh/oracle_key
-      - name: Verbose streamed-script attempt (expected to fail)
-        run: ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash -s' < deploy-remote.sh 2>&1 | tail -30
-      - name: Run on-server deploy script directly
+      - name: Environment probe
+        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'echo PROBE_START; pwd; ls ~/no13thfloor | head -5; df -h / | tail -1; command -v docker; sudo -n true && echo SUDO_OK; head -c 160 ~/no13thfloor/deploy-remote.sh | od -c | head -6; echo PROBE_END'
+      - name: Traced deploy run
         if: always()
-        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash ~/no13thfloor/deploy-remote.sh'
+        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash -x ~/no13thfloor/deploy-remote.sh' 2>&1 | tail -60
