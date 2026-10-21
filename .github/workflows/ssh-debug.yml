@@ -10,11 +10,13 @@ jobs:
           SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          printf '%s' "$SSH_KEY" > ~/.ssh/id_key
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_key
           chmod 600 ~/.ssh/id_key
           wc -c ~/.ssh/id_key
-          ssh-keygen -y -f ~/.ssh/id_key > ~/.ssh/id_key.pub 2>/tmp/keyerr || cat /tmp/keyerr
-          ssh-keygen -lf ~/.ssh/id_key.pub 2>/dev/null || true
-      - name: Verbose SSH test
+          ssh-keygen -lf ~/.ssh/id_key
+      - name: Verbose SSH simple command
         run: |
-          ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/id_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'echo SSH_OK; hostname' 2>&1 | tail -80
+          ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/id_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'echo SSH_OK; hostname; id' 2>&1 | tail -100
+      - name: Verbose SSH bash -s test
+        run: |
+          printf 'echo BASH_OK\n' | ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/id_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash -s' 2>&1 | tail -40
