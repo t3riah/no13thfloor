@@ -4,19 +4,27 @@ on:
 jobs:
   debug:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - name: Write key from secret
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Copy code to Oracle
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USER }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          source: "."
+          target: "~/no13thfloor"
+      - name: Prepare SSH key
         env:
           SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_key
-          chmod 600 ~/.ssh/id_key
-          wc -c ~/.ssh/id_key
-          ssh-keygen -lf ~/.ssh/id_key
-      - name: Verbose SSH simple command
-        run: |
-          ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/id_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'echo SSH_OK; hostname; id' 2>&1 | tail -100
-      - name: Verbose SSH bash -s test
-        run: |
-          printf 'echo BASH_OK\n' | ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/id_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash -s' 2>&1 | tail -40
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/oracle_key
+          chmod 600 ~/.ssh/oracle_key
+          ssh-keygen -lf ~/.ssh/oracle_key
+      - name: Verbose SSH probe
+        run: ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'echo SSH_OK; hostname'
+      - name: Real deploy attempt
+        run: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -i ~/.ssh/oracle_key ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} 'bash -s' < deploy-remote.sh
