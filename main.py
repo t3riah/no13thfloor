@@ -28,6 +28,11 @@ def policy_page(request: Request):
     return templates.TemplateResponse("policy.html", {"request": request})
 
 
+@app.get("/terms")
+def terms_page(request: Request):
+    return templates.TemplateResponse("terms.html", {"request": request})
+
+
 @app.get("/")
 def root():
     from fastapi.responses import RedirectResponse
